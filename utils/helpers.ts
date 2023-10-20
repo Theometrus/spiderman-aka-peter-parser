@@ -4,18 +4,16 @@ import {Command} from "commander";
 
 const SAMPLE_LOG_PATH = "logs/programming-task-example-data.log";
 
-export interface CountMap {
-  [key: string]: number;
-}
+export type CountMap = Record<string, number>;
 
-export function extractIp(str: string) {
+export function extractIp(str: string): string | null {
   const ipRegex = /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/;
   const match = str.match(ipRegex);
 
   return match ? match[0] : null;
 }
 
-export function extractUrl(str: string) {
+export function extractUrl(str: string): string | null {
   const urlRegex =
     /"(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH|CONNECT) (.*?) HTTP\/1.1"/;
   const match = str.match(urlRegex);
@@ -23,7 +21,9 @@ export function extractUrl(str: string) {
   return match ? match[2] : null;
 }
 
-export async function parseLogFile(path: string) {
+export async function parseLogFile(
+  path: string,
+): Promise<{ ipAddressCounts: CountMap; urlCounts: CountMap }> {
   const input = createReadStream(path);
   const ipAddressCounts: CountMap = {};
   const urlCounts: CountMap = {};
@@ -46,7 +46,10 @@ export async function parseLogFile(path: string) {
   return { ipAddressCounts, urlCounts };
 }
 
-export function getTopNCounts(countMap: CountMap, n: number) {
+export function getTopNCounts(
+  countMap: CountMap,
+  n: number,
+): Array<[string, number]> {
   const sorted = Object.entries(countMap).sort(
     ([_keyA, countA], [_keyB, countB]) => countB - countA,
   );
@@ -54,7 +57,7 @@ export function getTopNCounts(countMap: CountMap, n: number) {
   return sorted.slice(0, n);
 }
 
-export function getFilePathFromArgs() {
+export function getFilePathFromArgs(): string {
   const program = new Command();
 
   program.option("-f, --file");
