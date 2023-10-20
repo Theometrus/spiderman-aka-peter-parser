@@ -1,6 +1,6 @@
-import {extractIp, extractUrl, parseLogFile} from "../main";
+import {extractIp, extractUrl, getTopNCounts, parseLogFile,} from "../utils/helpers";
 
-describe("IP extraction", () => {
+describe("extractIp", () => {
   it("should extract IP address from a string", () => {
     const input = "Sample text with IP address 192.168.1.1 inside.";
     expect(extractIp(input)).toEqual("192.168.1.1");
@@ -27,7 +27,7 @@ describe("IP extraction", () => {
   });
 });
 
-describe("URL extraction", () => {
+describe("extractUrl", () => {
   it("should extract URL from a log string", () => {
     const input =
       '177.71.128.21 - - [10/Jul/2018:22:21:28 +0200] "POST /intranet-analytics/ HTTP/1.1" 200 3574 "-" "Mozilla/5.0 (X11; U; Linux x86_64; fr-FR) AppleWebKit/534.7 (KHTML, like Gecko) Epiphany/2.30.6 Safari/534.7"';
@@ -101,5 +101,53 @@ describe("Log file parsing", () => {
 
     expect(ipAddressCounts).toEqual(expectedIpAddressCounts);
     expect(urlCounts).toEqual(expectedUrlCounts);
+  });
+});
+
+describe("getTopNCounts", () => {
+  it("returns all entries when n is greater than the number of entries", () => {
+    const countMap = { a: 1, b: 2, c: 3 };
+    const n = 5;
+    const result = getTopNCounts(countMap, n);
+    expect(result).toEqual([
+      ["c", 3],
+      ["b", 2],
+      ["a", 1],
+    ]);
+  });
+
+  it("returns top n entries when n is less than the number of entries", () => {
+    const countMap = { a: 1, b: 2, c: 3 };
+    const n = 2;
+    const result = getTopNCounts(countMap, n);
+    expect(result).toEqual([
+      ["c", 3],
+      ["b", 2],
+    ]);
+  });
+
+  it("returns all entries when n is equal to the number of entries", () => {
+    const countMap = { a: 1, b: 2, c: 3 };
+    const n = 3;
+    const result = getTopNCounts(countMap, n);
+    expect(result).toEqual([
+      ["c", 3],
+      ["b", 2],
+      ["a", 1],
+    ]);
+  });
+
+  it("returns an empty array when n is 0", () => {
+    const countMap = { a: 1, b: 2, c: 3 };
+    const n = 0;
+    const result = getTopNCounts(countMap, n);
+    expect(result).toEqual([]);
+  });
+
+  it("returns an empty array when CountMap is empty", () => {
+    const countMap = {};
+    const n = 3;
+    const result = getTopNCounts(countMap, n);
+    expect(result).toEqual([]);
   });
 });
