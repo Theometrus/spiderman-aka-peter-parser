@@ -1,5 +1,6 @@
 import {createReadStream} from "fs";
 import {createInterface} from "readline";
+import {Command} from "commander";
 
 const SAMPLE_LOG_PATH = "/logs/programming-task-example-data.log";
 
@@ -48,7 +49,16 @@ export async function parseLogFile(path: string) {
   return { ipAddressCounts, urlCounts };
 }
 
+const program = new Command();
+program.option("-f, --file");
 
+program.parse();
+
+const options = program.opts();
+const limit = options.first ? 1 : undefined;
+
+const arg = program.args[0];
+const filePath = arg ? arg.split(options.separator, limit)[0] : SAMPLE_LOG_PATH;
 
 // parseLogFile("./logs/programming-task-example-data.log").then((res) => {
 //   console.log(res);
