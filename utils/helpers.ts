@@ -2,7 +2,9 @@ import {createReadStream} from "fs";
 import {createInterface} from "readline";
 import {Command} from "commander";
 
-interface CountMap {
+const SAMPLE_LOG_PATH = "logs/programming-task-example-data.log";
+
+export interface CountMap {
   [key: string]: number;
 }
 
@@ -53,11 +55,11 @@ export function getTopNCounts(countMap: CountMap, n: number) {
 }
 
 export function getFilePathFromArgs() {
-  const SAMPLE_LOG_PATH = "logs/programming-task-example-data.log";
-
   const program = new Command();
+
   program.option("-f, --file");
   program.parse();
+
   const options = program.opts();
   const limit = options.first ? 1 : undefined;
   const arg = program.args[0];
