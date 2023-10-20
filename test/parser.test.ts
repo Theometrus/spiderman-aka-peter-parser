@@ -1,4 +1,4 @@
-import {extractIp, extractUrl} from "../main";
+import {extractIp, extractUrl, parseLogFile} from "../main";
 
 describe("IP extraction", () => {
   it("should extract IP address from a string", () => {
@@ -51,5 +51,55 @@ describe("URL extraction", () => {
       '177.71.128.21 - - [10/Jul/2018:22:21:28 +0200] "POST /intranet-analytics/hello/world HTTP/1.1" 200 3574 "-" "Mozilla/5.0 (X11; U; Linux x86_64; fr-FR) AppleWebKit/534.7 (KHTML, like Gecko) Epiphany/2.30.6 Safari/534.7"';
     const url = "/intranet-analytics/hello/world";
     expect(extractUrl(input)).toEqual(url);
+  });
+});
+
+describe("Log file parsing", () => {
+  it("should return the number of occurrences of each ip address", async () => {
+    const expectedIpAddressCounts = {
+      "177.71.128.21": 3,
+      "168.41.191.40": 4,
+      "168.41.191.41": 1,
+      "168.41.191.9": 2,
+      "168.41.191.34": 2,
+      "50.112.00.28": 1,
+      "50.112.00.11": 3,
+      "72.44.32.11": 1,
+      "72.44.32.10": 3,
+      "168.41.191.43": 2,
+      "79.125.00.21": 1,
+    };
+
+    const expectedUrlCounts = {
+      "/intranet-analytics/": 1,
+      "http://example.net/faq/": 1,
+      "/this/page/does/not/exist/": 1,
+      "http://example.net/blog/category/meta/": 1,
+      "/blog/2018/08/survey-your-opinion-matters/": 1,
+      "/docs/manage-users/": 1,
+      "/blog/category/community/": 1,
+      "/faq/": 1,
+      "/docs/manage-websites/": 2,
+      "/faq/how-to-install/": 1,
+      "/asset.js": 1,
+      "/to-an-error": 1,
+      "/": 1,
+      "/docs/": 1,
+      "/moved-permanently": 1,
+      "/temp-redirect": 1,
+      "/faq/how-to/": 1,
+      "/translations/": 1,
+      "/newsletter/": 1,
+      "/hosting/": 1,
+      "/download/counter/": 1,
+      "/asset.css": 1,
+    };
+
+    const { ipAddressCounts, urlCounts } = await parseLogFile(
+      "test/data/simple.log",
+    );
+
+    expect(ipAddressCounts).toEqual(expectedIpAddressCounts);
+    expect(urlCounts).toEqual(expectedUrlCounts);
   });
 });
