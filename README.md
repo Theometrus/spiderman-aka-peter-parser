@@ -27,6 +27,7 @@ The application uses Jest for its tests. To run the included test suite, you can
 `pnpm test`
 
 # Assumptions
+- When IP or URL entries are tied by count for spots in the top 3, it doesn't matter which ones out of the competitors are displayed 
 - Each entry in the log file is on a separate line
 - Each individual line is not so obscenely large that it cannot fit in the system's memory 
 - URLs will appear in a "\<HTTP METHOD\> /intranet-analytics/ HTTP/1.1" sort of block

@@ -1,4 +1,4 @@
-import {getFilePathFromArgs, getTopNCounts, parseLogFile,} from "./utils/helpers";
+import {getFilePathFromArgs, getTopNCounts, parseLogFile} from "./utils/helpers";
 
 const filePath = getFilePathFromArgs();
 
