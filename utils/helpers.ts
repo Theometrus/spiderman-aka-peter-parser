@@ -1,8 +1,7 @@
 import {createReadStream} from "fs";
 import {createInterface} from "readline";
 import {Command} from "commander";
-
-const SAMPLE_LOG_PATH = "logs/programming-task-example-data.log";
+import {desiredNumEntries} from "../constants";
 
 export type CountMap = Record<string, number>;
 
@@ -57,7 +56,7 @@ export function getTopNCounts(
   return sorted.slice(0, n);
 }
 
-export function getFilePathFromArgs(): string {
+export function getFilePathFromArgs(): string | null {
   const program = new Command();
 
   program.option("-f, --file");
@@ -66,5 +65,28 @@ export function getFilePathFromArgs(): string {
   const options = program.opts();
   const limit = options.first ? 1 : undefined;
   const arg = program.args[0];
-  return arg ? arg.split(options.separator, limit)[0] : SAMPLE_LOG_PATH;
+  return arg?.split(options.separator, limit)[0] || null;
+}
+
+export function logEntities(
+  numEntities: number,
+  entities: string[],
+  entityType: string,
+): void {
+  if (numEntities === 0) {
+    console.log(`The log file doesn't have any valid ${entityType}s.`);
+    return;
+  }
+
+  if (numEntities < desiredNumEntries) {
+    console.log(
+      `The log file contains fewer than ${desiredNumEntries} unique ${entityType}s.`,
+    );
+  }
+
+  console.log(
+    `The top ${numEntities} most visited ${entityType}s are:\n${entities.join(
+      "\n",
+    )}`,
+  );
 }

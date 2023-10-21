@@ -1,40 +1,28 @@
-import {getFilePathFromArgs, getTopNCounts, parseLogFile} from "./utils/helpers";
+import {getFilePathFromArgs, getTopNCounts, logEntities, parseLogFile,} from "./utils/helpers";
+import {desiredNumEntries, SAMPLE_LOG_PATH} from "./constants";
 
-const filePath = getFilePathFromArgs();
+const filePath = getFilePathFromArgs() ?? SAMPLE_LOG_PATH;
 
 parseLogFile(filePath)
   .then(({ ipAddressCounts, urlCounts }) => {
-    const top3Urls = getTopNCounts(urlCounts, 3).map(
+    const topUrls = getTopNCounts(urlCounts, desiredNumEntries).map(
       ([url, count]) => `${url}, count: ${count}`,
     );
-    const returnedNumUrls = top3Urls.length;
+    const returnedNumUrls = topUrls.length;
 
-    const top3Ips = getTopNCounts(ipAddressCounts, 3).map(
+    const topIps = getTopNCounts(ipAddressCounts, desiredNumEntries).map(
       ([ip, count]) => `${ip}, count: ${count}`,
     );
-    const returnedNumIps = top3Ips.length;
+    const returnedNumIps = topIps.length;
 
     console.log(
       `The number of unique IPs is: ${Object.keys(ipAddressCounts).length}`,
     );
     console.log("\n");
 
-    if (returnedNumUrls < 3) {
-      console.log("The log file contains fewer than 3 unique URLs.");
-    }
-    console.log(
-      `The top ${returnedNumUrls} most visited URLs are:\n${top3Urls.join(
-        "\n",
-      )}`,
-    );
+    logEntities(returnedNumUrls, topUrls, "URL");
     console.log("\n");
-
-    if (returnedNumIps < 3) {
-      console.log("The log file contains fewer than 3 unique IPs.");
-    }
-    console.log(
-      `The top ${returnedNumIps} most active IPs are:\n${top3Ips.join("\n")}`,
-    );
+    logEntities(returnedNumIps, topIps, "IP");
   })
   .catch((error) => {
     console.log("The following error occurred:");
